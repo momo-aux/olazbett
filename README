@@ -1,0 +1,9 @@
+Code um ein NANO CNC shield für das z-bett des K40 zu verwenden.
+
+
+z-bett hier: https://www.thingiverse.com/thing:3051286
+
+hab mir selber pulleys gemacht: https://www.thingiverse.com/thing:4815530
+und abstandhalter damit die Kugellager drehen: https://www.thingiverse.com/thing:4822071
+
+Die Nano shields sind komplett verpfuscht, daher funktionieren sie nicht mit GRBL aber für sowas reichts :-)
