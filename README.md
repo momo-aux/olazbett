@@ -12,6 +12,7 @@ Die billigen Nano shields sind komplett verpfuscht, daher funktionieren sie nich
 
 ![Board](images/shield.jpg?raw=true "Shield")
 
+![Display](images/oled.jpg?raw=true "Display")
 
 Auf Pin 5 und 6 liegen die pushbuttons. 
 Beide zu irgendeinem GND.
