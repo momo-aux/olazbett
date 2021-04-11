@@ -36,6 +36,8 @@ int currentPosition = 0;
 int aState;
 int aLastState;
 
+boolean updateDisplay = false;
+
 void setup() {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -60,54 +62,66 @@ void setup() {
   pinMode(8, OUTPUT);
   digitalWrite(8, HIGH);
 
-  attachInterrupt(2, checkPosition, CHANGE);
-  attachInterrupt(3, checkPosition, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(2), checkPosition, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(3), checkPosition, CHANGE);
 }
 
 void checkPosition()
 {
   encoder.tick(); // just call tick() to check the state.
+  int newPos = encoder.getPosition();
+  static int pos = 0;
+  static int dir = 0;
+  if (pos != newPos) {
+    Serial.print("pos:");
+    Serial.print(newPos);
+    Serial.print(" dir:");
+    dir = (int)(encoder.getDirection());
+    Serial.println(dir);
+    pos = newPos;
+    switch (dir) {
+      case 1: {
+          position = position + 10;
+          updateDisplay = true;
+        }
+      case -1: {
+          position = position - 10;
+          updateDisplay = true;
+        }
+    }
+  } // if
+
 }
 
 
 
 void loop() {
   static int pos = 0;
-  encoder.tick();
 
   if (button1.pressed()) {
     position = position + 100;
-    displayText(speed, stepper.currentPosition(), position);
+    updateDisplay = true;
   }
   if (button2.pressed()) {
     position = position - 100;
-    displayText(speed, stepper.currentPosition(), position);
+    updateDisplay = true;
   }
   if (button3.pressed()) {
     digitalWrite(8, LOW);
     stepper.moveTo(position);
-    displayText(speed, stepper.currentPosition(), position);
-    Serial.println("Start");
+    updateDisplay = true;
   }
 
 
-  if ((int)encoder.getDirection() < 0) {
-    position = position + 10;
-    displayText(speed, stepper.currentPosition(), position);
-  }
-  if ((int)encoder.getDirection() > 0) {
-    position = position - 10;
-    displayText(speed, stepper.currentPosition(), position);
-  }
-
-
-
-  if (stepper.currentPosition() == position) {
-    displayText(speed, stepper.currentPosition(), position);
+  if (stepper.distanceToGo() == 0)  {
     digitalWrite(8, HIGH);
+    updateDisplay = true;
   }
 
-
+  if (updateDisplay) {
+    displayText(speed, stepper.currentPosition(), position);
+    updateDisplay = false;
+  }
   stepper.run();
 }
 
